@@ -20,5 +20,21 @@ EOT
       type = string
     })))
   }))
+  validation {
+    condition = alltrue([
+      for k, v in var.user_notification_rules : (
+        contains(["high", "low"], v.urgency)
+      )
+    ])
+    error_message = "must be one of: \"high\", \"low\""
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.user_notification_rules : (
+        v.contact_method == null || alltrue([for item in v.contact_method : (contains(["email_contact_method", "phone_contact_method", "push_notification_contact_method", "sms_contact_method", "whatsapp_contact_method"], item.type))])
+      )
+    ])
+    error_message = "must be one of: \"email_contact_method\", \"phone_contact_method\", \"push_notification_contact_method\", \"sms_contact_method\", \"whatsapp_contact_method\""
+  }
 }
 
